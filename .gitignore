@@ -1,0 +1,87 @@
+```gitignore
+# Entorno virtual
+entorno_virtual/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Archivos de modelo 
+modelos/*.pkl
+modelos/*.model
+modelos/*.joblib
+
+# Archivos de datos temporales
+datos/temp/
+*.tmp
+*.temp
+
+# Jupyter notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Archivos del sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Archivos de configuración local
+config_local.py
+.env
+.secrets
+
+# Archivos de sistema operativo
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Archivos de backup
+*.bak
+*.backup
+
+# Archivos temporales de datos
+*.csv.tmp
+*.pkl.tmp
