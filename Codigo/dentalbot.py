@@ -6,15 +6,17 @@ from configuracion import ConfiguracionDentalBot
 from preprocesador import ProcesadorTexto
 from clasificador import ClasificadorDentalRandomForest
 from generador_respuestas_ia import GeneradorRespuestasIA
+from detector_terminos_dentales import DetectorTerminosDentales 
 
 class DentalBot:
-    """Sistema DentalBot con IA para respuestas"""
+    """Sistema DentalBot con IA + Detector de Términos"""
     
     def __init__(self):
         self.configuracion = ConfiguracionDentalBot()
         self.procesador = ProcesadorTexto()
         self.clasificador = ClasificadorDentalRandomForest(self.configuracion)
-        self.generador_respuestas = GeneradorRespuestasIA()  # Ya tiene la API key
+        self.generador_respuestas = GeneradorRespuestasIA()
+        self.detector_terminos = DetectorTerminosDentales()  
         self.entrenado = False
         
     def cargar_datos_ejemplo(self):
@@ -100,7 +102,14 @@ class DentalBot:
         return precision, reporte
     
     def clasificar_pregunta(self, pregunta):
-        """Clasifica pregunta y genera respuesta con IA"""
+        """
+        Clasificación HÍBRIDA: Detector de Términos + Modelo ML
+        
+        ESTRATEGIA:
+        1. Primero usa el detector de términos (rápido, preciso para términos conocidos)
+        2. Si el detector no está seguro, usa el modelo ML
+        3. Combina ambos resultados para decisión final
+        """
         if not self.entrenado:
             return {'error': 'Modelo no entrenado. Ejecuta entrenar_modelo() primero.'}
         
@@ -111,53 +120,117 @@ class DentalBot:
                 'es_anatomia_dental': False,
                 'probabilidad_dental': 0.0,
                 'respuesta': 'Por favor, ingresa una pregunta válida sobre anatomía dental.',
-                'confianza': 'Baja'
+                'confianza': 'Baja',
+                'metodo': 'Validación'
             }
+
+        deteccion = self.detector_terminos.es_termino_dental(pregunta)
         
+        # Si el detector tiene ALTA confianza, confiar en él directamente
+        if deteccion['confianza'] == 'Alta':
+            es_dental = deteccion['es_dental']
+            
+            # Generar respuesta con IA
+            respuesta = self.generador_respuestas.generar_respuesta(pregunta, es_dental)
+            
+            return {
+                'pregunta_original': pregunta,
+                'es_anatomia_dental': es_dental,
+                'probabilidad_dental': 0.95 if es_dental else 0.05,
+                'respuesta': respuesta,
+                'confianza': 'Alta',
+                'metodo': 'Detector de Términos',
+                'terminos_encontrados': deteccion['terminos_encontrados'][:5],
+                'razon': deteccion['razon']
+            }
+
         pregunta_procesada = self.procesador.preprocesar(pregunta)
         
-        # Si después del preprocesamiento queda vacío, no es dental
+        # Si después del preprocesamiento queda vacío
         if not pregunta_procesada or len(pregunta_procesada.strip()) < 2:
             return {
                 'pregunta_original': pregunta,
                 'es_anatomia_dental': False,
                 'probabilidad_dental': 0.0,
                 'respuesta': 'Lo siento, no pude identificar términos relacionados con anatomía dental en tu pregunta. ¿Podrías reformularla?',
-                'confianza': 'Baja'
+                'confianza': 'Baja',
+                'metodo': 'Preprocesamiento'
             }
         
-        es_dental = self.clasificador.predecir([pregunta_procesada])[0]
-        probabilidad = self.clasificador.predecir_probabilidad([pregunta_procesada])[0]
+        # Clasificar con el modelo ML
+        es_dental_ml = self.clasificador.predecir([pregunta_procesada])[0]
+        probabilidad = self.clasificador.predecir_probabilidad([pregunta_procesada])[0]      
+        # Si el detector encontró términos dentales (confianza media)
+        # Y el modelo ML también dice que es dental → ES DENTAL
+        if deteccion['es_dental'] and es_dental_ml == 1:
+            es_dental_final = True
+            confianza_final = 'Alta'
+            metodo = 'Híbrido (Detector + ML coinciden)'
+            probabilidad_final = max(0.85, probabilidad[1])
         
-        # UMBRAL DE CONFIANZA: Si la probabilidad es baja, clasificar como NO dental
-        UMBRAL_MINIMO = 0.55  # Ajustable
+        # Si el detector dice NO dental pero ML dice dental con baja probabilidad
+        elif not deteccion['es_dental'] and es_dental_ml == 1 and probabilidad[1] < 0.7:
+            es_dental_final = False
+            confianza_final = 'Alta'
+            metodo = 'Detector de Términos (override ML)'
+            probabilidad_final = probabilidad[1]
         
-        if probabilidad[1] < UMBRAL_MINIMO and es_dental == 1:
-            # Forzar a NO dental si la confianza es muy baja
-            es_dental = 0
+        # Si el detector dice dental pero ML dice NO dental
+        elif deteccion['es_dental'] and es_dental_ml == 0:
+            # Darle más peso al detector si encontró términos claros
+            if len(deteccion['terminos_encontrados']) >= 2:
+                es_dental_final = True
+                confianza_final = 'Media-Alta'
+                metodo = 'Detector de Términos (override ML)'
+                probabilidad_final = 0.75
+            else:
+                es_dental_final = False
+                confianza_final = 'Media'
+                metodo = 'Modelo ML (override Detector)'
+                probabilidad_final = probabilidad[1]
+        
+        # Caso por defecto: confiar en el modelo ML
+        else:
+            UMBRAL_MINIMO = 0.55
+            if probabilidad[1] < UMBRAL_MINIMO and es_dental_ml == 1:
+                es_dental_final = False
+            else:
+                es_dental_final = bool(es_dental_ml)
             
+            confianza_final = 'Alta' if probabilidad[1] > 0.8 else 'Media' if probabilidad[1] > 0.6 else 'Baja'
+            metodo = 'Modelo ML'
+            probabilidad_final = probabilidad[1]
+        
         # GENERAR RESPUESTA CON IA
-        respuesta = self.generador_respuestas.generar_respuesta(pregunta, bool(es_dental))
+        respuesta = self.generador_respuestas.generar_respuesta(pregunta, es_dental_final)
         
         return {
             'pregunta_original': pregunta,
-            'es_anatomia_dental': bool(es_dental),
-            'probabilidad_dental': float(probabilidad[1]),
+            'es_anatomia_dental': es_dental_final,
+            'probabilidad_dental': float(probabilidad_final),
             'respuesta': respuesta,
-            'confianza': 'Alta' if probabilidad[1] > 0.8 else 'Media' if probabilidad[1] > 0.6 else 'Baja'
+            'confianza': confianza_final,
+            'metodo': metodo,
+            'terminos_encontrados': deteccion['terminos_encontrados'][:5] if deteccion['terminos_encontrados'] else [],
+            'deteccion_terminos': deteccion['es_dental'],
+            'clasificacion_ml': bool(es_dental_ml),
+            'probabilidad_ml': float(probabilidad[1])
         }
     
     def obtener_estadisticas(self):
-        """Estadísticas del modelo"""
+        """Estadísticas del modelo + detector"""
         if not self.entrenado:
             return {'error': 'Modelo no entrenado'}
         
         caracteristicas_importantes = self.clasificador.obtener_caracteristicas_importantes(10)
+        stats_detector = self.detector_terminos.contar_terminos()
         
         return {
             'caracteristicas_importantes': caracteristicas_importantes,
             'configuracion': str(self.configuracion),
-            'entrenado': self.entrenado
+            'entrenado': self.entrenado,
+            'terminos_dentales': stats_detector['terminos_dentales'],
+            'terminos_no_dentales': stats_detector['terminos_no_dentales']
         }
     
     def guardar_modelo(self, ruta='modelos/dentalbot_rf.pkl'):
