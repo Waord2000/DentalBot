@@ -1,17 +1,22 @@
-```gitignore
-# Entorno virtual
+# ========================================
+# ENTORNOS VIRTUALES
+# ========================================
 entorno_virtual/
 venv/
 ENV/
+env/
 env.bak/
 venv.bak/
+.Python
 
-# Archivos de Python
+# ========================================
+# ARCHIVOS DE PYTHON
+# ========================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
+*.pyc
 build/
 develop-eggs/
 dist/
@@ -29,46 +34,155 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Archivos de modelo 
+# ========================================
+# MODELOS ENTRENADOS (COMENTAR SI QUIERES SUBIRLOS)
+# ========================================
 modelos/*.pkl
 modelos/*.model
 modelos/*.joblib
+modelos/*.h5
+modelos/*.pt
 
-# Archivos de datos temporales
+# ========================================
+# DATOS Y ARCHIVOS TEMPORALES
+# ========================================
 datos/temp/
+datos/cache/
 *.tmp
 *.temp
+*.cache
 
-# Jupyter notebooks
+# ========================================
+# RESULTADOS Y REPORTES (OPCIONAL)
+# ========================================
+# Descomenta la siguiente línea si NO quieres subir resultados:
+# resultados/
+resultados/*.png
+resultados/*.jpg
+resultados/*.jpeg
+resultados/*.svg
+
+# ========================================
+# JUPYTER NOTEBOOKS
+# ========================================
 .ipynb_checkpoints
 *.ipynb
+*/.ipynb_checkpoints/*
 
-# Archivos del sistema
+# ========================================
+# ARCHIVOS DEL SISTEMA OPERATIVO
+# ========================================
+# macOS
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
-Thumbs.db
+.AppleDouble
+.LSOverride
 
-# Archivos de IDE
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ========================================
+# EDITORES E IDEs
+# ========================================
+# VSCode
 .vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
 .idea/
+.idea/*
+*.iws
+*.iml
+*.ipr
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# Vim
 *.swp
 *.swo
+*~
+.netrwhist
+Session.vim
 
-# Logs
+# Emacs
+*~
+\#*\#
+.\#*
+.emacs.desktop
+.emacs.desktop.lock
+*.elc
+
+# Atom
+.atom/
+
+# ========================================
+# LOGS Y ARCHIVOS DE DEBUG
+# ========================================
 *.log
 logs/
+*.out
+*.err
+debug.log
+error.log
 
-# Archivos de configuración local
+# ========================================
+# CONFIGURACIÓN LOCAL Y SECRETOS
+# ========================================
 config_local.py
 .env
+.env.local
+.env.*.local
 .secrets
+secrets.json
+api_keys.txt
+*.key
 
-# Archivos de sistema operativo
+# ========================================
+# ARCHIVOS DE BASE DE DATOS
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+
+# ========================================
+# ARCHIVOS COMPRIMIDOS
+# ========================================
 *.7z
 *.dmg
 *.gz
@@ -77,11 +191,90 @@ config_local.py
 *.rar
 *.tar
 *.zip
+*.bz2
+*.xz
 
-# Archivos de backup
+# ========================================
+# BACKUPS
+# ========================================
 *.bak
 *.backup
+*.old
+*_backup
+*_old
+backup/
+backups/
 
-# Archivos temporales de datos
+# ========================================
+# ARCHIVOS TEMPORALES DE PROCESAMIENTO
+# ========================================
 *.csv.tmp
 *.pkl.tmp
+*.json.tmp
+procesando/
+temp/
+
+# ========================================
+# NLTK DATA (DESCARGAS)
+# ========================================
+nltk_data/
+
+# ========================================
+# PYTEST Y TESTING
+# ========================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+.pytest_cache
+nosetests.xml
+coverage.xml
+*.cover
+.cache
+
+# ========================================
+# DOCUMENTACIÓN GENERADA
+# ========================================
+docs/_build/
+site/
+
+# ========================================
+# ARCHIVOS ESPECÍFICOS DEL PROYECTO
+# ========================================
+# Descomenta lo que NO quieras subir a Git:
+# datos/preguntas_dentales.csv
+# resultados/metricas_evaluacion.txt
+
+# ========================================
+# ARCHIVOS DE CONFIGURACIÓN PERSONAL
+# ========================================
+configuracion_personal.py
+mi_configuracion.py
+
+# ========================================
+# CARPETAS DE PRUEBAS
+# ========================================
+pruebas/
+tests/temp/
+experimental/
+
+# ========================================
+# PYTHON VIRTUAL ENVIRONMENT (POETRY)
+# ========================================
+poetry.lock
+.pdm.toml
+__pypackages__/
+
+# ========================================
+# MYPY
+# ========================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ========================================
+# PROFILING
+# ========================================
+*.prof
+*.lprof

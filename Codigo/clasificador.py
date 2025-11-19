@@ -56,7 +56,7 @@ class ClasificadorDentalRandomForest:
             stratify=etiquetas
         )
         
-        print(f"División de datos:")
+        print(f"Division de datos:")
         print(f"   - Entrenamiento: {len(X_entrenamiento)} ejemplos")
         print(f"   - Prueba: {len(X_prueba)} ejemplos")
         
@@ -102,11 +102,11 @@ class ClasificadorDentalRandomForest:
         precision = accuracy_score(y_prueba, predicciones)
         reporte = classification_report(
             y_prueba, predicciones,
-            target_names=['No Dental', 'Anatomía Dental'],
+            target_names=['No Dental', 'Anatomia Dental'],
             output_dict=True
         )
 
-        # NUEVA FUNCIONALIDAD: Mostrar métricas detalladas en texto
+        # Mostrar métricas detalladas en texto
         if mostrar_metricas:
             self._mostrar_metricas_detalladas(y_prueba, predicciones, precision, reporte)
 
@@ -116,35 +116,35 @@ class ClasificadorDentalRandomForest:
         """Muestra métricas detalladas en formato texto"""
         
         print("\n" + "="*70)
-        print(" "*20 + "REPORTE DE EVALUACIÓN DEL MODELO")
+        print(" "*20 + "REPORTE DE EVALUACION DEL MODELO")
         print("="*70)
         
         # 1. ACCURACY GENERAL
-        print(f"\n{'PRECISIÓN GENERAL (ACCURACY)':^70}")
+        print(f"\n{'PRECISION GENERAL (ACCURACY)':^70}")
         print("-"*70)
         print(f"   Accuracy: {precision:.4f} ({precision*100:.2f}%)")
         
         # 2. MATRIZ DE CONFUSIÓN
-        print(f"\n{'MATRIZ DE CONFUSIÓN':^70}")
+        print(f"\n{'MATRIZ DE CONFUSION':^70}")
         print("-"*70)
         cm = confusion_matrix(y_real, y_pred)
         
         print(f"\n                    Predicho")
-        print(f"                 No Dental  |  Anatomía Dental")
+        print(f"                 No Dental  |  Anatomia Dental")
         print(f"              " + "-"*35)
         print(f"   Real       |")
         print(f"   No Dental      {cm[0][0]:^6}    |    {cm[0][1]:^6}")
-        print(f"   Anatomía Dental {cm[1][0]:^6}    |    {cm[1][1]:^6}")
+        print(f"   Anatomia Dental {cm[1][0]:^6}    |    {cm[1][1]:^6}")
         
         # Interpretación de la matriz
-        print(f"\n   Interpretación:")
+        print(f"\n   Interpretacion:")
         print(f"   - Verdaderos Negativos (VN): {cm[0][0]} - Correctamente clasificados como NO dental")
         print(f"   - Falsos Positivos (FP):     {cm[0][1]} - Incorrectamente clasificados como dental")
         print(f"   - Falsos Negativos (FN):     {cm[1][0]} - Incorrectamente clasificados como NO dental")
         print(f"   - Verdaderos Positivos (VP): {cm[1][1]} - Correctamente clasificados como dental")
         
         # 3. MÉTRICAS POR CLASE
-        print(f"\n{'MÉTRICAS DETALLADAS POR CLASE':^70}")
+        print(f"\n{'METRICAS DETALLADAS POR CLASE':^70}")
         print("-"*70)
         
         print(f"\n   CLASE: No Dental")
@@ -153,11 +153,11 @@ class ClasificadorDentalRandomForest:
         print(f"   {'F1-Score:':<20} {reporte['No Dental']['f1-score']:.4f} ({reporte['No Dental']['f1-score']*100:.2f}%)")
         print(f"   {'Soporte:':<20} {int(reporte['No Dental']['support'])} muestras")
         
-        print(f"\n   CLASE: Anatomía Dental")
-        print(f"   {'Precision:':<20} {reporte['Anatomía Dental']['precision']:.4f} ({reporte['Anatomía Dental']['precision']*100:.2f}%)")
-        print(f"   {'Recall:':<20} {reporte['Anatomía Dental']['recall']:.4f} ({reporte['Anatomía Dental']['recall']*100:.2f}%)")
-        print(f"   {'F1-Score:':<20} {reporte['Anatomía Dental']['f1-score']:.4f} ({reporte['Anatomía Dental']['f1-score']*100:.2f}%)")
-        print(f"   {'Soporte:':<20} {int(reporte['Anatomía Dental']['support'])} muestras")
+        print(f"\n   CLASE: Anatomia Dental")
+        print(f"   {'Precision:':<20} {reporte['Anatomia Dental']['precision']:.4f} ({reporte['Anatomia Dental']['precision']*100:.2f}%)")
+        print(f"   {'Recall:':<20} {reporte['Anatomia Dental']['recall']:.4f} ({reporte['Anatomia Dental']['recall']*100:.2f}%)")
+        print(f"   {'F1-Score:':<20} {reporte['Anatomia Dental']['f1-score']:.4f} ({reporte['Anatomia Dental']['f1-score']*100:.2f}%)")
+        print(f"   {'Soporte:':<20} {int(reporte['Anatomia Dental']['support'])} muestras")
         
         # 4. PROMEDIOS
         print(f"\n{'PROMEDIOS':^70}")
@@ -171,7 +171,7 @@ class ClasificadorDentalRandomForest:
         
         # 5. TOP 10 CARACTERÍSTICAS IMPORTANTES
         if self.importancia_caracteristicas:
-            print(f"\n{'TOP 10 CARACTERÍSTICAS MÁS IMPORTANTES':^70}")
+            print(f"\n{'TOP 10 CARACTERISTICAS MAS IMPORTANTES':^70}")
             print("-"*70)
             top_features = sorted(self.importancia_caracteristicas.items(), 
                                 key=lambda x: x[1], reverse=True)[:10]
@@ -181,7 +181,7 @@ class ClasificadorDentalRandomForest:
                 print(f"   {i:2}. {feature:<20} {importance:.6f}  {barra}")
         
         # 6. ESTADÍSTICAS ADICIONALES
-        print(f"\n{'ESTADÍSTICAS ADICIONALES':^70}")
+        print(f"\n{'ESTADISTICAS ADICIONALES':^70}")
         print("-"*70)
         
         # Calcular tasa de error
@@ -191,15 +191,15 @@ class ClasificadorDentalRandomForest:
         # Distribución de predicciones
         unique, counts = np.unique(y_pred, return_counts=True)
         total = len(y_pred)
-        print(f"\n   Distribución de Predicciones:")
+        print(f"\n   Distribucion de Predicciones:")
         print(f"   - No Dental:        {counts[0]:3} ({counts[0]/total*100:.1f}%)")
-        print(f"   - Anatomía Dental:  {counts[1]:3} ({counts[1]/total*100:.1f}%)")
+        print(f"   - Anatomia Dental:  {counts[1]:3} ({counts[1]/total*100:.1f}%)")
         
         # Distribución real
         unique_real, counts_real = np.unique(y_real, return_counts=True)
-        print(f"\n   Distribución Real:")
+        print(f"\n   Distribucion Real:")
         print(f"   - No Dental:        {counts_real[0]:3} ({counts_real[0]/total*100:.1f}%)")
-        print(f"   - Anatomía Dental:  {counts_real[1]:3} ({counts_real[1]/total*100:.1f}%)")
+        print(f"   - Anatomia Dental:  {counts_real[1]:3} ({counts_real[1]/total*100:.1f}%)")
         
         print("\n" + "="*70)
         
@@ -216,32 +216,32 @@ class ClasificadorDentalRandomForest:
         
         with open(ruta_txt, 'w', encoding='utf-8') as f:
             f.write("="*70 + "\n")
-            f.write(" "*20 + "REPORTE DE EVALUACIÓN DEL MODELO\n")
+            f.write(" "*20 + "REPORTE DE EVALUACION DEL MODELO\n")
             f.write("="*70 + "\n")
             
-            f.write(f"\nPRECISIÓN GENERAL (ACCURACY)\n")
+            f.write(f"\nPRECISION GENERAL (ACCURACY)\n")
             f.write("-"*70 + "\n")
             f.write(f"   Accuracy: {precision:.4f} ({precision*100:.2f}%)\n")
             
-            f.write(f"\nMATRIZ DE CONFUSIÓN\n")
+            f.write(f"\nMATRIZ DE CONFUSION\n")
             f.write("-"*70 + "\n")
             f.write(f"\n                    Predicho\n")
-            f.write(f"                 No Dental  |  Anatomía Dental\n")
+            f.write(f"                 No Dental  |  Anatomia Dental\n")
             f.write(f"              " + "-"*35 + "\n")
             f.write(f"   Real       |\n")
             f.write(f"   No Dental      {cm[0][0]:^6}    |    {cm[0][1]:^6}\n")
-            f.write(f"   Anatomía Dental {cm[1][0]:^6}    |    {cm[1][1]:^6}\n")
+            f.write(f"   Anatomia Dental {cm[1][0]:^6}    |    {cm[1][1]:^6}\n")
             
-            f.write(f"\n   Interpretación:\n")
+            f.write(f"\n   Interpretacion:\n")
             f.write(f"   - Verdaderos Negativos (VN): {cm[0][0]}\n")
             f.write(f"   - Falsos Positivos (FP):     {cm[0][1]}\n")
             f.write(f"   - Falsos Negativos (FN):     {cm[1][0]}\n")
             f.write(f"   - Verdaderos Positivos (VP): {cm[1][1]}\n")
             
-            f.write(f"\nMÉTRICAS DETALLADAS POR CLASE\n")
+            f.write(f"\nMETRICAS DETALLADAS POR CLASE\n")
             f.write("-"*70 + "\n")
             
-            for clase in ['No Dental', 'Anatomía Dental']:
+            for clase in ['No Dental', 'Anatomia Dental']:
                 f.write(f"\n   CLASE: {clase}\n")
                 f.write(f"   Precision: {reporte[clase]['precision']:.4f} ({reporte[clase]['precision']*100:.2f}%)\n")
                 f.write(f"   Recall:    {reporte[clase]['recall']:.4f} ({reporte[clase]['recall']*100:.2f}%)\n")
@@ -259,7 +259,7 @@ class ClasificadorDentalRandomForest:
             
             # Top características
             if self.importancia_caracteristicas:
-                f.write(f"\nTOP 10 CARACTERÍSTICAS MÁS IMPORTANTES\n")
+                f.write(f"\nTOP 10 CARACTERISTICAS MAS IMPORTANTES\n")
                 f.write("-"*70 + "\n")
                 top_features = sorted(self.importancia_caracteristicas.items(), 
                                     key=lambda x: x[1], reverse=True)[:10]
@@ -269,7 +269,7 @@ class ClasificadorDentalRandomForest:
             
             f.write("\n" + "="*70 + "\n")
         
-        print(f"\n   Métricas guardadas en: {ruta_txt}")
+        print(f"\n   Metricas guardadas en: {ruta_txt}")
 
     def obtener_caracteristicas_importantes(self, top_n=20):
         """Obtiene las características más importantes"""

@@ -1,62 +1,62 @@
 ======================================================================
-                    REPORTE DE EVALUACIÓN DEL MODELO
+                    REPORTE DE EVALUACION DEL MODELO
 ======================================================================
 
-PRECISIÓN GENERAL (ACCURACY)
+PRECISION GENERAL (ACCURACY)
 ----------------------------------------------------------------------
-   Accuracy: 0.8889 (88.89%)
+   Accuracy: 0.8077 (80.77%)
 
-MATRIZ DE CONFUSIÓN
+MATRIZ DE CONFUSION
 ----------------------------------------------------------------------
 
                     Predicho
-                 No Dental  |  Anatomía Dental
+                 No Dental  |  Anatomia Dental
               -----------------------------------
    Real       |
-   No Dental        6       |      0   
-   Anatomía Dental   2       |      10  
+   No Dental        8       |      2   
+   Anatomia Dental   3       |      13  
 
-   Interpretación:
-   - Verdaderos Negativos (VN): 6
-   - Falsos Positivos (FP):     0
-   - Falsos Negativos (FN):     2
-   - Verdaderos Positivos (VP): 10
+   Interpretacion:
+   - Verdaderos Negativos (VN): 8
+   - Falsos Positivos (FP):     2
+   - Falsos Negativos (FN):     3
+   - Verdaderos Positivos (VP): 13
 
-MÉTRICAS DETALLADAS POR CLASE
+METRICAS DETALLADAS POR CLASE
 ----------------------------------------------------------------------
 
    CLASE: No Dental
-   Precision: 0.7500 (75.00%)
-   Recall:    1.0000 (100.00%)
-   F1-Score:  0.8571 (85.71%)
-   Soporte:   6 muestras
+   Precision: 0.7273 (72.73%)
+   Recall:    0.8000 (80.00%)
+   F1-Score:  0.7619 (76.19%)
+   Soporte:   10 muestras
 
-   CLASE: Anatomía Dental
-   Precision: 1.0000 (100.00%)
-   Recall:    0.8333 (83.33%)
-   F1-Score:  0.9091 (90.91%)
-   Soporte:   12 muestras
+   CLASE: Anatomia Dental
+   Precision: 0.8667 (86.67%)
+   Recall:    0.8125 (81.25%)
+   F1-Score:  0.8387 (83.87%)
+   Soporte:   16 muestras
 
 PROMEDIOS
 ----------------------------------------------------------------------
-   Macro avg Precision:    0.8750
-   Macro avg Recall:       0.9167
-   Macro avg F1-Score:     0.8831
-   Weighted avg Precision: 0.9167
-   Weighted avg Recall:    0.8889
-   Weighted avg F1-Score:  0.8918
+   Macro avg Precision:    0.7970
+   Macro avg Recall:       0.8063
+   Macro avg F1-Score:     0.8003
+   Weighted avg Precision: 0.8131
+   Weighted avg Recall:    0.8077
+   Weighted avg F1-Score:  0.8092
 
-TOP 10 CARACTERÍSTICAS MÁS IMPORTANTES
+TOP 10 CARACTERISTICAS MAS IMPORTANTES
 ----------------------------------------------------------------------
-    1. qué                  0.204274
-    2. cómo                 0.164935
-    3. dental               0.062623
-    4. cuáles               0.054834
-    5. cuál                 0.047738
-    6. superior             0.040643
-    7. características      0.027397
-    8. describe             0.022322
-    9. molar                0.020158
-   10. segundo              0.020124
+    1. cómo                 0.058171
+    2. qué                  0.047466
+    3. anatomía             0.032372
+    4. cuáles               0.031793
+    5. describe             0.027808
+    6. dental               0.026498
+    7. características      0.026425
+    8. explica              0.016119
+    9. superior             0.015631
+   10. inferior             0.014813
 
 ======================================================================

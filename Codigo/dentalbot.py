@@ -6,7 +6,7 @@ from configuracion import ConfiguracionDentalBot
 from preprocesador import ProcesadorTexto
 from clasificador import ClasificadorDentalRandomForest
 from generador_respuestas_ia import GeneradorRespuestasIA
-from detector_terminos_dentales import DetectorTerminosDentales 
+from detector_terminos_dentales import DetectorTerminosDentales
 
 class DentalBot:
     """Sistema DentalBot con IA + Detector de Términos"""
@@ -16,7 +16,7 @@ class DentalBot:
         self.procesador = ProcesadorTexto()
         self.clasificador = ClasificadorDentalRandomForest(self.configuracion)
         self.generador_respuestas = GeneradorRespuestasIA()
-        self.detector_terminos = DetectorTerminosDentales()  
+        self.detector_terminos = DetectorTerminosDentales()
         self.entrenado = False
         
     def cargar_datos_ejemplo(self):
@@ -94,21 +94,24 @@ class DentalBot:
         self.clasificador.entrenar(X_entrenamiento, y_entrenamiento)
         self.entrenado = True
         
-        print("Evaluando modelo...")
-        precision, reporte, predicciones = self.clasificador.evaluar(X_prueba, y_prueba, mostrar_metricas=False)
+        print("\n" + "="*70)
+        print("EVALUANDO MODELO CON METRICAS COMPLETAS")
+        print("="*70)
         
-        print(f"Precisión: {precision:.3f}")
+        # CAMBIO CRÍTICO: mostrar_metricas=True para que muestre TODO
+        precision, reporte, predicciones = self.clasificador.evaluar(
+            X_prueba, 
+            y_prueba, 
+            mostrar_metricas=True  # ANTES ESTABA EN FALSE
+        )
+        
+        print(f"\nPrecision general del modelo: {precision:.3f}")
         
         return precision, reporte
     
     def clasificar_pregunta(self, pregunta):
         """
         Clasificación HÍBRIDA: Detector de Términos + Modelo ML
-        
-        ESTRATEGIA:
-        1. Primero usa el detector de términos (rápido, preciso para términos conocidos)
-        2. Si el detector no está seguro, usa el modelo ML
-        3. Combina ambos resultados para decisión final
         """
         if not self.entrenado:
             return {'error': 'Modelo no entrenado. Ejecuta entrenar_modelo() primero.'}
@@ -123,7 +126,8 @@ class DentalBot:
                 'confianza': 'Baja',
                 'metodo': 'Validación'
             }
-
+        
+        # PASO 1: DETECTOR DE TÉRMINOS (PRIMERO)
         deteccion = self.detector_terminos.es_termino_dental(pregunta)
         
         # Si el detector tiene ALTA confianza, confiar en él directamente
@@ -143,7 +147,8 @@ class DentalBot:
                 'terminos_encontrados': deteccion['terminos_encontrados'][:5],
                 'razon': deteccion['razon']
             }
-
+        
+        # PASO 2: MODELO ML (SI HAY DUDA)
         pregunta_procesada = self.procesador.preprocesar(pregunta)
         
         # Si después del preprocesamiento queda vacío
@@ -159,7 +164,10 @@ class DentalBot:
         
         # Clasificar con el modelo ML
         es_dental_ml = self.clasificador.predecir([pregunta_procesada])[0]
-        probabilidad = self.clasificador.predecir_probabilidad([pregunta_procesada])[0]      
+        probabilidad = self.clasificador.predecir_probabilidad([pregunta_procesada])[0]
+        
+        # PASO 3: COMBINACIÓN HÍBRIDA
+        
         # Si el detector encontró términos dentales (confianza media)
         # Y el modelo ML también dice que es dental → ES DENTAL
         if deteccion['es_dental'] and es_dental_ml == 1:

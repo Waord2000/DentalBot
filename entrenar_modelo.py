@@ -20,8 +20,9 @@ def main():
     # Crear directorios si no existen
     os.makedirs('modelos', exist_ok=True)
     os.makedirs('datos', exist_ok=True)
+    os.makedirs('resultados', exist_ok=True)  # ASEGURAR QUE EXISTE
     
-    # Inicializar DentalBot (API key ya configurada)
+    # Inicializar DentalBot
     print("\nInicializando DentalBot...")
     bot = DentalBot()
     print("Sistema inicializado")
@@ -37,7 +38,7 @@ def main():
         usar_csv = True
     else:
         print("Archivo CSV no encontrado")
-        print("→ Se usarán datos de ejemplo integrados")
+        print("Se usaran datos de ejemplo integrados")
         usar_csv = False
     
     # Entrenar modelo
@@ -46,6 +47,7 @@ def main():
     print("="*70)
     
     try:
+        # AQUÍ SE MOSTRARAN TODAS LAS METRICAS AUTOMÁTICAMENTE
         precision, reporte = bot.entrenar_modelo(usar_csv=usar_csv, ruta_csv=ruta_csv)
     except Exception as e:
         print(f"\nError durante el entrenamiento: {e}")
@@ -59,17 +61,23 @@ def main():
             print("   - Verifica las dependencias: pip install -r Requerimientos.txt")
             return
     
-    # Mostrar resultados
+    # Mostrar resumen final
     print("\n" + "="*70)
-    print("RESULTADOS DEL ENTRENAMIENTO")
+    print("RESUMEN FINAL DEL ENTRENAMIENTO")
     print("="*70)
-    print(f"Precisión global: {precision:.3f} ({precision*100:.1f}%)")
+    print(f"Precision global: {precision:.4f} ({precision*100:.2f}%)")
     
-    if reporte and 'Anatomía Dental' in reporte:
-        print(f"\nMétricas clase 'Anatomía Dental':")
-        print(f"   - Precision: {reporte['Anatomía Dental']['precision']:.3f}")
-        print(f"   - Recall:    {reporte['Anatomía Dental']['recall']:.3f}")
-        print(f"   - F1-Score:  {reporte['Anatomía Dental']['f1-score']:.3f}")
+    if reporte and 'Anatomia Dental' in reporte:
+        print(f"\nClase 'Anatomia Dental':")
+        print(f"   - Precision: {reporte['Anatomia Dental']['precision']:.4f}")
+        print(f"   - Recall:    {reporte['Anatomia Dental']['recall']:.4f}")
+        print(f"   - F1-Score:  {reporte['Anatomia Dental']['f1-score']:.4f}")
+    
+    if reporte and 'No Dental' in reporte:
+        print(f"\nClase 'No Dental':")
+        print(f"   - Precision: {reporte['No Dental']['precision']:.4f}")
+        print(f"   - Recall:    {reporte['No Dental']['recall']:.4f}")
+        print(f"   - F1-Score:  {reporte['No Dental']['f1-score']:.4f}")
     
     # Guardar modelo
     modelo_ruta = 'modelos/dentalbot_rf.pkl'
@@ -78,20 +86,27 @@ def main():
         bot.guardar_modelo(modelo_ruta)
         print("Modelo guardado exitosamente")
     except Exception as e:
-        print(f"✗ Error guardando modelo: {e}")
+        print(f"Error guardando modelo: {e}")
     
     # Mostrar características importantes
     print("\n" + "="*70)
-    print("TOP 5 CARACTERÍSTICAS MÁS IMPORTANTES")
+    print("TOP 5 CARACTERISTICAS MAS IMPORTANTES")
     print("="*70)
     try:
         stats = bot.obtener_estadisticas()
         if 'error' not in stats:
             for i, (caract, importancia) in enumerate(stats['caracteristicas_importantes'][:5], 1):
-                print(f"   {i}. {caract:<20} → {importancia:.4f}")
+                print(f"   {i}. {caract:<20} -> {importancia:.4f}")
         print("="*70)
     except Exception as e:
         print(f"No se pudieron obtener características: {e}")
+    
+    # Verificar que el archivo de métricas se generó
+    ruta_metricas = 'resultados/metricas_evaluacion.txt'
+    if os.path.exists(ruta_metricas):
+        print(f"\nMETRICAS GUARDADAS EN: {ruta_metricas}")
+    else:
+        print(f"\nADVERTENCIA: No se generó el archivo de métricas en {ruta_metricas}")
     
     # Probar con una pregunta de ejemplo
     print("\n" + "="*70)
@@ -106,7 +121,8 @@ def main():
         
         if 'error' not in resultado:
             print("\n" + "-"*70)
-            print(f"Es anatomía dental: {'✓ SÍ' if resultado['es_anatomia_dental'] else '✗ NO'}")
+            estado = "SI" if resultado['es_anatomia_dental'] else "NO"
+            print(f"Es anatomia dental: {estado}")
             print(f"Probabilidad: {resultado['probabilidad_dental']:.1%}")
             print(f"Confianza: {resultado['confianza']}")
             print("-"*70)
@@ -114,14 +130,15 @@ def main():
             print(f"{resultado['respuesta']}")
             print("-"*70)
         else:
-            print(f"\n✗ Error en prueba: {resultado['error']}")
+            print(f"\nError en prueba: {resultado['error']}")
     except Exception as e:
-        print(f"\n✗ Error en prueba: {e}")
+        print(f"\nError en prueba: {e}")
     
     print("\n" + "="*70)
     print("ENTRENAMIENTO COMPLETADO")
     print("="*70)
     print("\nAhora puedes ejecutar: python ejecutar_dentalbot.py")
+    print(f"Revisa las métricas en: {ruta_metricas}")
 
 if __name__ == "__main__":
     main()
